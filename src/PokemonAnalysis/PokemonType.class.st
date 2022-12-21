@@ -16,7 +16,8 @@ PokemonType class >> start [
 
 	<script>
 	| stream reader splitAndTrim pokemonTypes canvas shapes highlightable pokemonDictionary sortedPokemonTypes |
-	stream := 'pharo-local/iceberg/PokemonAnalysis/src/Relationships.csv' asFileReference readStream.
+	stream := 'pharo-local/iceberg/fuhrmanator/PokemonAnalysis/src/Relationships.csv'
+		          asFileReference readStream.
 	reader := NeoCSVReader on: stream.
 	splitAndTrim := [ :l | (l splitOn: ',') collect: [ :s | s trim ] ].
 	pokemonTypes := reader
