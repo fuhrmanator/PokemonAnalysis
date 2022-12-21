@@ -11,29 +11,32 @@ Class {
 	#category : #PokemonAnalysis
 }
 
+{ #category : #'as yet unclassified' }
+PokemonType class >> readTypesFromCSV: fileDesc [
+
+	| stream reader splitAndTrim |
+	stream := fileDesc asFileReference readStream.
+	reader := NeoCSVReader on: stream.
+	splitAndTrim := [ :l | (l splitOn: ',') collect: [ :s | s trim ] ].
+	^ reader
+		  separator: Character tab;
+		  recordClass: self;
+		  skipHeader;
+		  addField: #typeName:;
+		  addField: #strongAgainst: converter: splitAndTrim;
+		  addField: #weakAgainst: converter: splitAndTrim;
+		  addField: #resistantTo: converter: splitAndTrim;
+		  addField: #vulnerableTo: converter: splitAndTrim;
+		  upToEnd
+]
+
 { #category : #accessing }
 PokemonType class >> start [
 
 	<script>
-	| stream reader splitAndTrim pokemonTypes canvas shapes highlightable pokemonDictionary sortedPokemonTypes |
-	stream := 'pharo-local/iceberg/fuhrmanator/PokemonAnalysis/src/Relationships.csv'
-		          asFileReference readStream.
-	reader := NeoCSVReader on: stream.
-	splitAndTrim := [ :l | (l splitOn: ',') collect: [ :s | s trim ] ].
-	pokemonTypes := reader
-		                separator: Character tab;
-		                recordClass: self;
-		                skipHeader;
-		                addField: #typeName:;
-		                "Name"addField: #strongAgainst:
-		                converter: splitAndTrim;
-		                "strengths"addField: #weakAgainst:
-		                converter: splitAndTrim;
-		                "weaknesses"addField: #resistantTo:
-		                converter: splitAndTrim;
-		                "resistances"addField: #vulnerableTo:
-		                converter: splitAndTrim;
-		                "vulnerabilities"upToEnd.
+	| pokemonTypes canvas shapes highlightable pokemonDictionary sortedPokemonTypes |
+	pokemonTypes := self readTypesFromCSV:
+		                'pharo-local/iceberg/fuhrmanator/PokemonAnalysis/src/Relationships.csv'.
 
 	sortedPokemonTypes := pokemonTypes asSortedCollection: [ :a :b | 
 		                      a asString <= b asString ].
@@ -44,7 +47,7 @@ PokemonType class >> start [
 	canvas := RSCanvas new.
 	shapes := RSCircle models: sortedPokemonTypes.
 	shapes
-		size: 30;
+		size: 50;
 		color: Color white.
 
 	shapes @ RSLabeled middle.
@@ -60,10 +63,13 @@ PokemonType class >> start [
 		withBorderAttachPoint;
 		shapes: shapes;
 		connectToAll: [ :t | 
-			t vulnerableTo collect: [ :v | pokemonDictionary at: v asString ] ].
+			t vulnerableTo collect: [ :v | pokemonDictionary at: v asString ] ];
+		connectToAll: [ :t | 
+			t weakAgainst collect: [ :v | pokemonDictionary at: v asString ] ].
+	"first node should be at top (12 o'clock)"
 	RSCircleLayout new
 		initialAngleInDegree: -90;
-		"first node should be at top 12 o'clock"on: shapes.
+		on: shapes.
 	canvas @ RSCanvasController.
 	canvas open
 ]
@@ -74,8 +80,20 @@ PokemonType >> asString [
 ]
 
 { #category : #accessing }
+PokemonType >> resistantTo [
+
+	^ resistantTo
+]
+
+{ #category : #accessing }
 PokemonType >> resistantTo: aCollection [ 
 	resistantTo := aCollection.
+]
+
+{ #category : #accessing }
+PokemonType >> strongAgainst [
+
+	^ strongAgainst
 ]
 
 { #category : #accessing }
@@ -96,6 +114,12 @@ PokemonType >> vulnerableTo [
 { #category : #accessing }
 PokemonType >> vulnerableTo: aCollection [ 
 	vulnerableTo := aCollection
+]
+
+{ #category : #accessing }
+PokemonType >> weakAgainst [
+
+	^ weakAgainst
 ]
 
 { #category : #accessing }
