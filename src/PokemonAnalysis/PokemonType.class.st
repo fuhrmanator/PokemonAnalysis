@@ -50,8 +50,9 @@ PokemonType class >> start [
 		size: 50;
 		color: Color white.
 
-	shapes @ RSPopup @ RSLabeled middle.
-	"shapes @ RSHighlightable green."
+	shapes @ RSPopup.
+	shapes @ RSLabeled middle.
+
 	hl1 := RSHighlightable new.
 	hl1 highlightColor: Color red translucent.
 	hl1 highlightShapes: [ :aShape | 
@@ -67,30 +68,29 @@ PokemonType class >> start [
 	shapes @ hl2.
 
 	hl3 := RSHighlightable new.
-	hl3 highlightColor: Color blue translucent.
+	"hl3 highlightColor: Color blue translucent."
+	hl3 highlightBorder: (RSBorder new
+			 width: 3;
+			 color: Color blue translucent).
 	hl3 highlightShapes: [ :aShape | 
 		shapes select: [ :w | 
 			aShape model resistantTo includes: w model asString ] ].
 	shapes @ hl3.
 
 	hl4 := RSHighlightable new.
-	hl4 highlightColor: Color green translucent.
-	hl4 highlightShapes: [ :aShape | 
-		shapes select: [ :w | 
-			aShape model strongAgainst includes: w model asString ] ].
+	hl4 highlightColor: Color green.
+	hl4 withOutgoingLines.
 	shapes @ hl4.
 
 	canvas addAll: shapes.
 
-	"RSLineBuilder line
-		color: Color gray translucent;
-		width: 3;
+	RSLineBuilder line
+		color: Color transparent;
+		width: 1;
 		withBorderAttachPoint;
 		shapes: shapes;
 		connectToAll: [ :t | 
-			t vulnerableTo collect: [ :v | pokemonDictionary at: v asString ] ];
-		connectToAll: [ :t | 
-			t weakAgainst collect: [ :v | pokemonDictionary at: v asString ] ]."
+			t strongAgainst collect: [ :n | pokemonDictionary at: n ] ].
 	"first node should be at top (12 o'clock)"
 	RSCircleLayout new
 		initialAngleInDegree: -90;
@@ -118,12 +118,13 @@ PokemonType >> resistantTo: aCollection [
 { #category : #accessing }
 PokemonType >> strongAgainst [
 
-	^ strongAgainst
+	^ strongAgainst ifNotNil: [ strongAgainst ] ifNil: [ #() ] 
 ]
 
 { #category : #accessing }
-PokemonType >> strongAgainst: aCollection [ 
-	strongAgainst := aCollection 
+PokemonType >> strongAgainst: aCollection [
+
+		strongAgainst := aCollection
 ]
 
 { #category : #'var accessors' }
