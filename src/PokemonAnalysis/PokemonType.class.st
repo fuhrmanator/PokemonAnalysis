@@ -34,7 +34,7 @@ PokemonType class >> readTypesFromCSV: fileDesc [
 PokemonType class >> start [
 
 	<script>
-	| pokemonTypes canvas shapes highlightable pokemonDictionary sortedPokemonTypes |
+	| pokemonTypes canvas shapes hl1 hl2 hl3 hl4 pokemonDictionary sortedPokemonTypes |
 	pokemonTypes := self readTypesFromCSV:
 		                'pharo-local/iceberg/fuhrmanator/PokemonAnalysis/src/Relationships.csv'.
 
@@ -50,14 +50,39 @@ PokemonType class >> start [
 		size: 50;
 		color: Color white.
 
-	shapes @ RSLabeled middle.
-	shapes @ RSHighlightable green.
-	highlightable := RSHighlightable new.
-	highlightable highlightColor: Color red translucent.
-	highlightable withOutgoingShapes.
-	shapes @ highlightable.
+	shapes @ RSPopup @ RSLabeled middle.
+	"shapes @ RSHighlightable green."
+	hl1 := RSHighlightable new.
+	hl1 highlightColor: Color red translucent.
+	hl1 highlightShapes: [ :aShape | 
+		shapes select: [ :w | 
+			aShape model vulnerableTo includes: w model asString ] ].
+	shapes @ hl1.
+
+	hl2 := RSHighlightable new.
+	hl2 highlightColor: Color orange translucent.
+	hl2 highlightShapes: [ :aShape | 
+		shapes select: [ :w | 
+			aShape model weakAgainst includes: w model asString ] ].
+	shapes @ hl2.
+
+	hl3 := RSHighlightable new.
+	hl3 highlightColor: Color blue translucent.
+	hl3 highlightShapes: [ :aShape | 
+		shapes select: [ :w | 
+			aShape model resistantTo includes: w model asString ] ].
+	shapes @ hl3.
+
+	hl4 := RSHighlightable new.
+	hl4 highlightColor: Color green translucent.
+	hl4 highlightShapes: [ :aShape | 
+		shapes select: [ :w | 
+			aShape model strongAgainst includes: w model asString ] ].
+	shapes @ hl4.
+
 	canvas addAll: shapes.
-	RSLineBuilder line
+
+	"RSLineBuilder line
 		color: Color gray translucent;
 		width: 3;
 		withBorderAttachPoint;
@@ -65,7 +90,7 @@ PokemonType class >> start [
 		connectToAll: [ :t | 
 			t vulnerableTo collect: [ :v | pokemonDictionary at: v asString ] ];
 		connectToAll: [ :t | 
-			t weakAgainst collect: [ :v | pokemonDictionary at: v asString ] ].
+			t weakAgainst collect: [ :v | pokemonDictionary at: v asString ] ]."
 	"first node should be at top (12 o'clock)"
 	RSCircleLayout new
 		initialAngleInDegree: -90;
