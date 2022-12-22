@@ -34,7 +34,7 @@ PokemonType class >> readTypesFromCSV: fileDesc [
 PokemonType class >> start [
 
 	<script>
-	| pokemonTypes canvas shapes hl1 hl2 hl3 hl4 pokemonDictionary sortedPokemonTypes |
+	| pokemonTypes canvas shapes hl1 hl2 hl3 hl4 pokemonDictionary sortedPokemonTypes legend l from to win |
 	pokemonTypes := self readTypesFromCSV:
 		                'pharo-local/iceberg/fuhrmanator/PokemonAnalysis/src/Relationships.csv'.
 
@@ -95,8 +95,30 @@ PokemonType class >> start [
 	RSCircleLayout new
 		initialAngleInDegree: -90;
 		on: shapes.
+
+	legend := RSLegend new.
+	legend container: canvas.
+	legend title: 'Legend'.
+	legend text: 'Vulnerable to' withCircleColor: Color red translucent.
+	legend text: 'Weak against' withCircleColor: Color orange translucent.
+	legend text: 'Resistant to' withShape: (RSCircle new
+			 size: 15;
+			 color: Color white;
+			 borderColor: Color blue translucent).
+
+	from := RSBox new size: 0.
+	to := RSBox new size: 0.
+	l := RSLine new
+		     color: Color green;
+		     from: from;
+		     to: to.
+	to translateBy: 15 @ 8.
+	legend text: 'Strong against' withShape: l.
+	legend build.
+
 	canvas @ RSCanvasController.
-	canvas open
+	win := canvas open.
+	win name: 'Fred'
 ]
 
 { #category : #converting }
