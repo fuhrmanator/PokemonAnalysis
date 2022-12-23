@@ -98,7 +98,7 @@ PokemonType class >> start [
 
 	legend := RSLegend new.
 	legend container: canvas.
-	legend title: 'Legend'.
+	legend title: 'Legend (mouse over a type)'.
 	legend text: 'Vulnerable to' withCircleColor: Color red translucent.
 	legend text: 'Weak against' withCircleColor: Color orange translucent.
 	legend text: 'Resistant to' withShape: (RSCircle new
@@ -117,8 +117,7 @@ PokemonType class >> start [
 	legend build.
 
 	canvas @ RSCanvasController.
-	win := canvas open.
-	win name: 'Fred'
+	win := canvas openWithTitle: 'Pokemon Type Relationships'
 ]
 
 { #category : #converting }
