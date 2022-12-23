@@ -38,9 +38,19 @@ readTypesFromCSV: fileDesc
 
 ## Loading this project by its baseline
 
+Execute the following in a Playground:
+
 ```st
 Metacello new
 	githubUser: 'fuhrmanator' project: 'PokemonAnalysis' commitish: 'main' path: 'src';
 	baseline: 'PokemonAnalysis';
 	load
+```
+
+## Running the browser
+
+Execute the following in a Playground:
+
+```st
+PokemonType start
 ```
