@@ -79,7 +79,7 @@ PokemonType class >> start [
 
 	hl4 := RSHighlightable new.
 	hl4 highlightColor: Color green.
-	hl4 withOutgoingLines.
+	hl4 withOutgoingLinesOnly.
 	shapes @ hl4.
 
 	canvas addAll: shapes.
