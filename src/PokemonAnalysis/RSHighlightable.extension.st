@@ -1,6 +1,6 @@
-Extension { #name : #RSHighlightable }
+Extension { #name : 'RSHighlightable' }
 
-{ #category : #'*PokemonAnalysis' }
+{ #category : '*PokemonAnalysis' }
 RSHighlightable >> withOutgoingLinesOnly [
 
 	self highlightShapes: [ :s | 
@@ -10,7 +10,7 @@ RSHighlightable >> withOutgoingLinesOnly [
 		list ]
 ]
 
-{ #category : #'*PokemonAnalysis' }
+{ #category : '*PokemonAnalysis' }
 RSHighlightable >> withOutgoingShapes [
 
 	self highlightShapes: [ :s | 

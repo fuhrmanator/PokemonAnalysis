@@ -1,6 +1,6 @@
 Class {
-	#name : #PokemonType,
-	#superclass : #Object,
+	#name : 'PokemonType',
+	#superclass : 'Object',
 	#instVars : [
 		'typeName',
 		'weakAgainst',
@@ -8,10 +8,11 @@ Class {
 		'vulnerableTo',
 		'strongAgainst'
 	],
-	#category : #PokemonAnalysis
+	#category : 'PokemonAnalysis',
+	#package : 'PokemonAnalysis'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 PokemonType class >> browse [
 
 	<script>
@@ -105,7 +106,7 @@ PokemonType class >> browse [
 	win := canvas openWithTitle: 'Pokemon Type Relationships'
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 PokemonType class >> readTypesFromCSV: fileDesc [
 
 	| stream reader splitAndTrim |
@@ -124,7 +125,7 @@ PokemonType class >> readTypesFromCSV: fileDesc [
 		  upToEnd
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 PokemonType class >> start [
 
 	<script>
@@ -214,56 +215,56 @@ PokemonType class >> start [
 	win := canvas openWithTitle: 'Pokemon Type Relationships'
 ]
 
-{ #category : #converting }
+{ #category : 'converting' }
 PokemonType >> asString [
 	^ typeName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 PokemonType >> resistantTo [
 
 	^ resistantTo
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 PokemonType >> resistantTo: aCollection [ 
 	resistantTo := aCollection.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 PokemonType >> strongAgainst [
 
 	^ strongAgainst ifNotNil: [ strongAgainst ] ifNil: [ #() ] 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 PokemonType >> strongAgainst: aCollection [
 
 		strongAgainst := aCollection
 ]
 
-{ #category : #'var accessors' }
+{ #category : 'var accessors' }
 PokemonType >> typeName: aString [ 
 	typeName := aString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 PokemonType >> vulnerableTo [
 	^ vulnerableTo
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 PokemonType >> vulnerableTo: aCollection [ 
 	vulnerableTo := aCollection
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 PokemonType >> weakAgainst [
 
 	^ weakAgainst
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 PokemonType >> weakAgainst: aCollection [ 
 	weakAgainst := aCollection
 ]

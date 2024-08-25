@@ -1,1 +1,1 @@
-Package { #name : #PokemonAnalysis }
+Package { #name : 'PokemonAnalysis' }
