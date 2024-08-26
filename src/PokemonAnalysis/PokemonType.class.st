@@ -129,7 +129,7 @@ PokemonType class >> readTypesFromCSV: fileDesc [
 PokemonType class >> start [
 
 	<script>
-	| pokemonTypes canvas shapes hl1 hl2 hl3 hl4 pokemonDictionary sortedPokemonTypes legend l from to win |
+	| pokemonTypes canvas shapes hlVulnerableTo hlWeakAgainst hlResistantTo hlStrongAgainst pokemonDictionary sortedPokemonTypes legend l from to win |
 	pokemonTypes := self readTypesFromCSV:
 		                'pharo-local/iceberg/fuhrmanator/PokemonAnalysis/src/Relationships.csv'.
 
@@ -148,34 +148,34 @@ PokemonType class >> start [
 	shapes @ RSPopup.
 	shapes @ RSLabeled middle.
 
-	hl1 := RSHighlightable new.
-	hl1 highlightColor: Color red translucent.
-	hl1 highlightShapes: [ :aShape | 
+	hlVulnerableTo := RSHighlightable new.
+	hlVulnerableTo highlightColor: Color red translucent.
+	hlVulnerableTo highlightShapes: [ :aShape | 
 		shapes select: [ :w | 
 			aShape model vulnerableTo includes: w model asString ] ].
-	shapes @ hl1.
+	shapes @ hlVulnerableTo.
 
-	hl2 := RSHighlightable new.
-	hl2 highlightColor: Color orange translucent.
-	hl2 highlightShapes: [ :aShape | 
+	hlWeakAgainst := RSHighlightable new.
+	hlWeakAgainst highlightColor: Color orange translucent.
+	hlWeakAgainst highlightShapes: [ :aShape | 
 		shapes select: [ :w | 
 			aShape model weakAgainst includes: w model asString ] ].
-	shapes @ hl2.
+	shapes @ hlWeakAgainst.
 
-	hl3 := RSHighlightable new.
+	hlResistantTo := RSHighlightable new.
 	"hl3 highlightColor: Color blue translucent."
-	hl3 highlightBorder: (RSBorder new
+	hlResistantTo highlightBorder: (RSBorder new
 			 width: 3;
 			 color: Color blue translucent).
-	hl3 highlightShapes: [ :aShape | 
+	hlResistantTo highlightShapes: [ :aShape | 
 		shapes select: [ :w | 
 			aShape model resistantTo includes: w model asString ] ].
-	shapes @ hl3.
+	shapes @ hlResistantTo.
 
-	hl4 := RSHighlightable new.
-	hl4 highlightColor: Color green.
-	hl4 withOutgoingLinesOnly.
-	shapes @ hl4.
+	hlStrongAgainst := RSHighlightable new.
+	hlStrongAgainst highlightColor: Color green.
+	hlStrongAgainst withOutgoingLinesOnly.
+	shapes @ hlStrongAgainst.
 
 	canvas addAll: shapes.
 
