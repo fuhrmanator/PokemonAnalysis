@@ -12,8 +12,10 @@ Class {
 { #category : 'as yet unclassified' }
 PokemonTeamBuilder >> findBalancedTeams [
 
-	| teams team teamMoveTypes pokemonMoveTypes |
+	| teams pokemonsToIgnore team teamMoveTypes pokemonMoveTypes |
 	teams := OrderedCollection new.
+
+	pokemonsToIgnore := { 'Registeel' }.
 
 	team := PokemonTeam new.
 
@@ -43,13 +45,13 @@ PokemonTeamBuilder >> findBalancedTeams [
 					show: ' ' , t;
 					cr ] ].
 		"Don't add the pokemon to the team unless its types aren't already in the team"
-		(((team types includesAny: p types) or:
-			  (teamMoveTypes includesAny: pokemonMoveTypes)) or: team size > 2)
-			ifFalse: [
-				team add: p.
-				Transcript
-					show: 'Adding ' , p name;
-					cr ] ].
+		((((team types includesAny: p types) or:
+			   (teamMoveTypes includesAny: pokemonMoveTypes)) or: team size > 2)
+			 or: (pokemonsToIgnore includes: p name)) ifFalse: [
+			team add: p.
+			Transcript
+				show: 'Adding ' , p name;
+				cr ] ].
 
 	teams add: team.
 
