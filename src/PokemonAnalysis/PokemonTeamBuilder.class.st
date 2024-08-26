@@ -25,17 +25,24 @@ PokemonTeamBuilder >> findBalancedTeams [
 		team size < 3 ifTrue: [
 			Transcript
 				show: 'Pokemon: ' , p name;
-				cr ].
-		teamMoveTypes := team moves collect: [ :m | "get the type of the move"
-			                 self typeOf: m ].
-		Transcript show: 'teamMoveTypes: '.
-		teamMoveTypes do: [ :t | Transcript show: ' ', t; cr ].
-		pokemonMoveTypes := p moves collect: [ :m | "get the type of the moved"
-			                    self typeOf: m ].
+				cr.
 
-		Transcript show: 'pokemonMoveTypes: '.
-		pokemonMoveTypes do: [ :t | Transcript show: ' ', t; cr ].
-		
+			teamMoveTypes := team moves collect: [ :m | "get the type of the move"
+				                 self typeOf: m ].
+			Transcript show: 'teamMoveTypes: '.
+			teamMoveTypes do: [ :t |
+				Transcript
+					show: ' ' , t;
+					cr ].
+			pokemonMoveTypes := p moves collect: [ :m | "get the type of the moved"
+				                    self typeOf: m ].
+
+			Transcript show: 'pokemonMoveTypes: '.
+			pokemonMoveTypes do: [ :t |
+				Transcript
+					show: ' ' , t;
+					cr ] ].
+		"Don't add the pokemon to the team unless its types aren't already in the team"
 		(((team types includesAny: p types) or:
 			  (teamMoveTypes includesAny: pokemonMoveTypes)) or: team size > 2)
 			ifFalse: [
