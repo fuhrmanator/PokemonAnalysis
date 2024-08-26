@@ -1,5 +1,5 @@
 Class {
-	#name : 'Pokemon',
+	#name : 'RankedPokemon',
 	#superclass : 'Object',
 	#instVars : [
 		'name',
@@ -22,7 +22,7 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-Pokemon class >> readPokemonsFromCSV: fileDesc [
+RankedPokemon class >> readPokemonsFromCSV: fileDesc [
 
 	| stream reader joinTypeFields joinChargedMoves movesDict |
 	stream := fileDesc asFileReference readStream.
@@ -74,169 +74,197 @@ Pokemon class >> readPokemonsFromCSV: fileDesc [
 ]
 
 { #category : 'accessing' }
-Pokemon >> attack [
+RankedPokemon >> asString [
+
+	^ self name
+]
+
+{ #category : 'accessing' }
+RankedPokemon >> attack [
 
 	^ attack
 ]
 
 { #category : 'accessing' }
-Pokemon >> attack: anObject [
+RankedPokemon >> attack: anObject [
 
 	attack := anObject
 ]
 
 { #category : 'accessing' }
-Pokemon >> buddyDistance [
+RankedPokemon >> buddyDistance [
 
 	^ buddyDistance
 ]
 
 { #category : 'accessing' }
-Pokemon >> buddyDistance: anObject [
+RankedPokemon >> buddyDistance: anObject [
 
 	buddyDistance := anObject
 ]
 
 { #category : 'accessing' }
-Pokemon >> chargedMoveCost [
+RankedPokemon >> chargedMoveCost [
 
 	^ chargedMoveCost
 ]
 
 { #category : 'accessing' }
-Pokemon >> chargedMoveCost: anObject [
+RankedPokemon >> chargedMoveCost: anObject [
 
 	chargedMoveCost := anObject
 ]
 
 { #category : 'accessing' }
-Pokemon >> chargedMoves [
+RankedPokemon >> chargedMoves [
 
 	^ chargedMoves
 ]
 
 { #category : 'accessing' }
-Pokemon >> chargedMoves: anObject [
+RankedPokemon >> chargedMoves: anObject [
 
 	chargedMoves := anObject
 ]
 
 { #category : 'accessing' }
-Pokemon >> cp [
+RankedPokemon >> cp [
 
 	^ cp
 ]
 
 { #category : 'accessing' }
-Pokemon >> cp: anObject [
+RankedPokemon >> cp: anObject [
 
 	cp := anObject
 ]
 
 { #category : 'accessing' }
-Pokemon >> defense [
+RankedPokemon >> defense [
 
 	^ defense
 ]
 
 { #category : 'accessing' }
-Pokemon >> defense: anObject [
+RankedPokemon >> defense: anObject [
 
 	defense := anObject
 ]
 
 { #category : 'accessing' }
-Pokemon >> dex [
+RankedPokemon >> dex [
 
 	^ dex
 ]
 
 { #category : 'accessing' }
-Pokemon >> dex: anObject [
+RankedPokemon >> dex: anObject [
 
 	dex := anObject
 ]
 
 { #category : 'accessing' }
-Pokemon >> fastMove [
+RankedPokemon >> fastMove [
 
 	^ fastMove
 ]
 
 { #category : 'accessing' }
-Pokemon >> fastMove: anObject [
+RankedPokemon >> fastMove: anObject [
 
 	fastMove := anObject
 ]
 
 { #category : 'accessing' }
-Pokemon >> level [
+RankedPokemon >> level [
 
 	^ level
 ]
 
 { #category : 'accessing' }
-Pokemon >> level: anObject [
+RankedPokemon >> level: anObject [
 
 	level := anObject
 ]
 
 { #category : 'accessing' }
-Pokemon >> name [
+RankedPokemon >> moves [
+	"Transcript show: 'moves: '; 
+		show: fastMove; 
+		show: ', ';
+		show: chargedMoves keys first;
+		show: ', ';
+		show: chargedMoves keys second."
+
+	^ chargedMoves keys size = 1
+		  ifTrue: [
+			  {
+				  fastMove.
+				  chargedMoves keys first } ]
+			ifFalse: [
+			  {
+				  fastMove.
+				  chargedMoves keys first.
+				  chargedMoves keys second } ]
+
+]
+
+{ #category : 'accessing' }
+RankedPokemon >> name [
 
 	^ name
 ]
 
 { #category : 'accessing' }
-Pokemon >> name: anObject [
+RankedPokemon >> name: anObject [
 
 	name := anObject
 ]
 
 { #category : 'accessing' }
-Pokemon >> rank [
+RankedPokemon >> rank [
 
 	^ rank
 ]
 
 { #category : 'accessing' }
-Pokemon >> rank: anObject [
+RankedPokemon >> rank: anObject [
 
 	rank := anObject
 ]
 
 { #category : 'accessing' }
-Pokemon >> stamina [
+RankedPokemon >> stamina [
 
 	^ stamina
 ]
 
 { #category : 'accessing' }
-Pokemon >> stamina: anObject [
+RankedPokemon >> stamina: anObject [
 
 	stamina := anObject
 ]
 
 { #category : 'accessing' }
-Pokemon >> statProduct [
+RankedPokemon >> statProduct [
 
 	^ statProduct
 ]
 
 { #category : 'accessing' }
-Pokemon >> statProduct: anObject [
+RankedPokemon >> statProduct: anObject [
 
 	statProduct := anObject
 ]
 
 { #category : 'accessing' }
-Pokemon >> types [
+RankedPokemon >> types [
 
 	^ types
 ]
 
 { #category : 'accessing' }
-Pokemon >> types: anObject [
+RankedPokemon >> types: anObject [
 
 	types := anObject
 ]
