@@ -155,7 +155,9 @@ PokemonType class >> start [
 		| list |
 		list := s incomingLines collect: #yourself as: RSGroup.
 		"list addAll: (s outgoingLines collect: #to)."
-		list ].	
+		"Add shape if its vulnerable to itself"
+		(s model vulnerableTo includes: s model asString) ifTrue: [ list add: s ].
+		list ].
 	shapes @ hlVulnerableTo.
 
 	hlWeakAgainst := RSHighlightable new.
