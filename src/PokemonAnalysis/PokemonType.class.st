@@ -133,7 +133,7 @@ PokemonType class >> start [
 	pokemonTypes := self readTypesFromCSV:
 		                'pharo-local/iceberg/fuhrmanator/PokemonAnalysis/src/Relationships.csv'.
 
-	sortedPokemonTypes := pokemonTypes asSortedCollection: [ :a :b | 
+	sortedPokemonTypes := pokemonTypes asSortedCollection: [ :a :b |
 		                      a asString <= b asString ].
 
 	pokemonDictionary := Dictionary new.
@@ -150,15 +150,18 @@ PokemonType class >> start [
 
 	hlVulnerableTo := RSHighlightable new.
 	hlVulnerableTo highlightColor: Color red translucent.
-	hlVulnerableTo highlightShapes: [ :aShape | 
-		shapes select: [ :w | 
-			aShape model vulnerableTo includes: w model asString ] ].
+	"withIncomingLinesOnly doesn't exist, so we make it"
+	hlVulnerableTo highlightShapes: [ :s |
+		| list |
+		list := s incomingLines collect: #yourself as: RSGroup.
+		"list addAll: (s outgoingLines collect: #to)."
+		list ].	
 	shapes @ hlVulnerableTo.
 
 	hlWeakAgainst := RSHighlightable new.
 	hlWeakAgainst highlightColor: Color orange translucent.
-	hlWeakAgainst highlightShapes: [ :aShape | 
-		shapes select: [ :w | 
+	hlWeakAgainst highlightShapes: [ :aShape |
+		shapes select: [ :w |
 			aShape model weakAgainst includes: w model asString ] ].
 	shapes @ hlWeakAgainst.
 
@@ -167,13 +170,13 @@ PokemonType class >> start [
 	hlResistantTo highlightBorder: (RSBorder new
 			 width: 3;
 			 color: Color blue translucent).
-	hlResistantTo highlightShapes: [ :aShape | 
-		shapes select: [ :w | 
+	hlResistantTo highlightShapes: [ :aShape |
+		shapes select: [ :w |
 			aShape model resistantTo includes: w model asString ] ].
 	shapes @ hlResistantTo.
 
 	hlStrongAgainst := RSHighlightable new.
-	hlStrongAgainst highlightColor: Color green.
+	hlStrongAgainst highlightColor: Color green translucent.
 	hlStrongAgainst withOutgoingLinesOnly.
 	shapes @ hlStrongAgainst.
 
@@ -181,10 +184,10 @@ PokemonType class >> start [
 
 	RSLineBuilder line
 		color: Color transparent;
-		width: 1;
+		width: 3;
 		withBorderAttachPoint;
 		shapes: shapes;
-		connectToAll: [ :t | 
+		connectToAll: [ :t |
 			t strongAgainst collect: [ :n | pokemonDictionary at: n ] ].
 	"first node should be at top (12 o'clock)"
 	RSCircleLayout new
