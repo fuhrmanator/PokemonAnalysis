@@ -129,7 +129,7 @@ PokemonType class >> readTypesFromCSV: fileDesc [
 PokemonType class >> start [
 
 	<script>
-	| pokemonTypes canvas shapes hlVulnerableTo hlWeakAgainst hlResistantTo hlStrongAgainst pokemonDictionary sortedPokemonTypes legend l from to win |
+	| pokemonTypes canvas shapes hlVulnerableTo hlWeakAgainst hlResistantTo hlStrongAgainst pokemonDictionary sortedPokemonTypes legend sl vl from to win len |
 	pokemonTypes := self readTypesFromCSV:
 		                'pharo-local/iceberg/fuhrmanator/PokemonAnalysis/src/Relationships.csv'.
 
@@ -144,8 +144,13 @@ PokemonType class >> start [
 	shapes
 		size: 50;
 		color: Color white.
+	"RSGroup doesn't understand border:"
+	shapes do: [ :s | 
+		s border: (RSBorder new
+			width: 1;
+			color: (Color gray translucent)) ].
 
-	shapes @ RSPopup.
+	"shapes @ RSPopup."
 	shapes @ RSLabeled middle.
 
 	hlVulnerableTo := RSHighlightable new.
@@ -183,11 +188,13 @@ PokemonType class >> start [
 	shapes @ hlStrongAgainst.
 
 	canvas addAll: shapes.
+	len := 4.
 
 	RSLineBuilder line
 		color: Color transparent;
-		width: 3;
-		withBorderAttachPoint;
+		width: len * 2;
+		markerEnd: (RSShapeFactory arrow size: len * 4; color: Color transparent);
+		attachPoint: (RSBorderAttachPoint new endOffset: len);
 		shapes: shapes;
 		connectToAll: [ :t |
 			t strongAgainst collect: [ :n | pokemonDictionary at: n ] ].
@@ -199,21 +206,32 @@ PokemonType class >> start [
 	legend := RSLegend new.
 	legend container: canvas.
 	legend title: 'Legend (mouse over a type)'.
-	legend text: 'Vulnerable to' withCircleColor: Color red translucent.
+
+	from := RSBox new size: 0.
+	to := RSBox new size: 0.
+	sl := RSLine new
+				width: 2;
+				color: Color green translucent;
+				from: from;
+				to: to.
+	to translateBy: 15 @ 8.
+	legend text: 'Strong against' withShape: sl.
+
+	from := RSBox new size: 0.
+	to := RSBox new size: 0.
+	vl := RSLine new
+				width: 2;
+				color: Color red translucent;
+				from: from;
+				to: to.
+	to translateBy: 15 @ 8.
+	legend text: 'Vulnerable to' withCircleColor: Color red translucent; text: '' withShape: vl.
 	legend text: 'Weak against' withCircleColor: Color orange translucent.
 	legend text: 'Resistant to' withShape: (RSCircle new
 			 size: 15;
 			 color: Color white;
 			 borderColor: Color blue translucent).
 
-	from := RSBox new size: 0.
-	to := RSBox new size: 0.
-	l := RSLine new
-		     color: Color green;
-		     from: from;
-		     to: to.
-	to translateBy: 15 @ 8.
-	legend text: 'Strong against' withShape: l.
 	legend build.
 
 	canvas @ RSCanvasController.
