@@ -125,11 +125,16 @@ PokemonType class >> readTypesFromCSV: fileDesc [
 		  upToEnd
 ]
 
+{ #category : 'as yet unclassified' }
+PokemonType class >> resistantColor [
+	^ Color blue translucent
+]
+
 { #category : 'accessing' }
 PokemonType class >> start [
 
 	<script>
-	| pokemonTypes canvas shapes hlVulnerableTo hlWeakAgainst hlResistantTo hlStrongAgainst pokemonDictionary sortedPokemonTypes legend sl vl from to win len |
+	| pokemonTypes canvas shapes hlVulnerableTo hlWeakAgainst hlResistantTo hlStrongAgainst pokemonDictionary sortedPokemonTypes legend sl vl wl rl from to win len |
 	pokemonTypes := self readTypesFromCSV:
 		                'pharo-local/iceberg/fuhrmanator/PokemonAnalysis/src/Relationships.csv'.
 
@@ -145,59 +150,107 @@ PokemonType class >> start [
 		size: 50;
 		color: Color white.
 	"RSGroup doesn't understand border:"
-	shapes do: [ :s | 
+	shapes do: [ :s |
 		s border: (RSBorder new
-			width: 1;
-			color: (Color gray translucent)) ].
+				 width: 1;
+				 color: Color gray translucent) ].
 
 	"shapes @ RSPopup."
 	shapes @ RSLabeled middle.
 
+	"Strong against (opposite of Vulnerable to)"
+	hlStrongAgainst := RSHighlightable new.
+	hlStrongAgainst highlightColor: self strongColor.
+	"Don't include outgoing Beziers"
+	hlStrongAgainst highlightShapes: [ :s |
+		| list |
+		list := (s outgoingLines select: [ :l | l class name = 'RSLine' ])
+			        as: RSGroup.
+		list ].
+	shapes @ hlStrongAgainst.
+
+	"Vulnerable to (opposite of Strong against)"
 	hlVulnerableTo := RSHighlightable new.
-	hlVulnerableTo highlightColor: Color red translucent.
+	hlVulnerableTo highlightColor: self vulnerableColor.
+
 	"withIncomingLinesOnly doesn't exist, so we make it"
 	hlVulnerableTo highlightShapes: [ :s |
 		| list |
-		list := s incomingLines collect: #yourself as: RSGroup.
+		"only collect regular lines -- beziers are another type of incoming"
+		list := (s incomingLines select: [ :l | l class name = 'RSLine' ])
+			        as: RSGroup.
 		"list addAll: (s outgoingLines collect: #to)."
 		"Add shape if its vulnerable to itself"
-		(s model vulnerableTo includes: s model asString) ifTrue: [ list add: s ].
+		(s model vulnerableTo includes: s model asString) ifTrue: [
+			list add: s ].
 		list ].
 	shapes @ hlVulnerableTo.
 
+	"Weak against (opposite of Resistant to)"
 	hlWeakAgainst := RSHighlightable new.
-	hlWeakAgainst highlightColor: Color orange translucent.
-	hlWeakAgainst highlightShapes: [ :aShape |
-		shapes select: [ :w |
-			aShape model weakAgainst includes: w model asString ] ].
+	hlWeakAgainst highlightColor: self weakColor.
+	hlWeakAgainst highlightShapes: [ :s |
+		| list |
+		"collect the RSBezier outgoing lines"
+		list := (s outgoingLines select: [ :l | l class name ~= 'RSLine' ])
+			        as: RSGroup.
+
+		"Add shape if its weakAgainst itself"
+		(s model weakAgainst includes: s model asString) ifTrue: [
+			list add: s ].
+
+		list ].
+
 	shapes @ hlWeakAgainst.
 
+	"Resistant to (opposite of weak against)"
 	hlResistantTo := RSHighlightable new.
-	"hl3 highlightColor: Color blue translucent."
-	hlResistantTo highlightBorder: (RSBorder new
-			 width: 3;
-			 color: Color blue translucent).
-	hlResistantTo highlightShapes: [ :aShape |
-		shapes select: [ :w |
-			aShape model resistantTo includes: w model asString ] ].
-	shapes @ hlResistantTo.
+	hlResistantTo highlightColor: self resistantColor.
 
-	hlStrongAgainst := RSHighlightable new.
-	hlStrongAgainst highlightColor: Color green translucent.
-	hlStrongAgainst withOutgoingLinesOnly.
-	shapes @ hlStrongAgainst.
+	hlResistantTo highlightShapes: [ :s |
+		| list |
+		"collect the RSBezier outgoing lines"
+		list := (s incomingLines select: [ :l | l class name ~= 'RSLine' ])
+			        as: RSGroup.
+
+		"Add shape if its resistant to itself"
+		"(s model resistantTo includes: s model asString) ifTrue: [
+			list add: s ]."
+		list ].
+
+	shapes @ hlResistantTo.
 
 	canvas addAll: shapes.
 	len := 4.
 
+	"make lines for relationships"
+
+	"strongAgainst/vulnerableTo"
 	RSLineBuilder line
 		color: Color transparent;
 		width: len * 2;
-		markerEnd: (RSShapeFactory arrow size: len * 4; color: Color transparent);
+		markerEnd: (RSShapeFactory arrow
+				 size: len * 4;
+				 color: Color transparent);
 		attachPoint: (RSBorderAttachPoint new endOffset: len);
 		shapes: shapes;
 		connectToAll: [ :t |
-			t strongAgainst collect: [ :n | pokemonDictionary at: n ] ].
+		t strongAgainst collect: [ :n | pokemonDictionary at: n ] ].
+
+	"weakAgainst/resistantTo"
+	RSLineBuilder directedBezier
+		color: Color transparent;
+		width: len;
+		markerEnd: (RSShapeFactory arrow
+				 size: len * 2;
+				 color: Color transparent);
+		attachPoint: (RSBorderAttachPoint new endOffset: len);
+		shapes: shapes;
+		connectToAll: [ :t |
+		t weakAgainst collect: [ :n | pokemonDictionary at: n ] ].
+
+
+
 	"first node should be at top (12 o'clock)"
 	RSCircleLayout new
 		initialAngleInDegree: -90;
@@ -210,32 +263,70 @@ PokemonType class >> start [
 	from := RSBox new size: 0.
 	to := RSBox new size: 0.
 	sl := RSLine new
-				width: 2;
-				color: Color green translucent;
-				from: from;
-				to: to.
+		      width: 4;
+		      color: self strongColor;
+		      from: from;
+		      to: to.
 	to translateBy: 15 @ 8.
 	legend text: 'Strong against' withShape: sl.
+
+	rl := RSBezier new
+		      width: 2;
+		      color: self resistantColor;
+		      controlPoints: {
+				      (0 @ 0).
+				      (2 @ 5).
+				      (10 @ 9).
+				      (15 @ 8) }.
+	legend text: 'Resistant to' withShape: rl.
+
 
 	from := RSBox new size: 0.
 	to := RSBox new size: 0.
 	vl := RSLine new
-				width: 2;
-				color: Color red translucent;
-				from: from;
-				to: to.
+		      width: 4;
+		      color: self vulnerableColor;
+		      from: from;
+		      to: to.
 	to translateBy: 15 @ 8.
-	legend text: 'Vulnerable to' withCircleColor: Color red translucent; text: '' withShape: vl.
-	legend text: 'Weak against' withCircleColor: Color orange translucent.
-	legend text: 'Resistant to' withShape: (RSCircle new
-			 size: 15;
-			 color: Color white;
-			 borderColor: Color blue translucent).
+	legend
+		text: 'Vulnerable to' withCircleColor: self vulnerableColor;
+		text: '' withShape: vl.
+
+	wl := RSBezier new
+		      width: 2;
+		      color: self weakColor;
+		      controlPoints: {
+				      (0 @ 0).
+				      (2 @ 5).
+				      (10 @ 9).
+				      (15 @ 8) }.
+	legend
+		text: 'Weak against' withCircleColor: self weakColor;
+		text: '' withShape: wl.
 
 	legend build.
 
 	canvas @ RSCanvasController.
 	win := canvas openWithTitle: 'Pokemon Type Relationships'
+]
+
+{ #category : 'as yet unclassified' }
+PokemonType class >> strongColor [ 
+
+	^ Color green translucent
+]
+
+{ #category : 'as yet unclassified' }
+PokemonType class >> vulnerableColor [ 
+
+	^ Color red translucent
+]
+
+{ #category : 'as yet unclassified' }
+PokemonType class >> weakColor [ 
+
+	^ Color orange translucent
 ]
 
 { #category : 'converting' }
