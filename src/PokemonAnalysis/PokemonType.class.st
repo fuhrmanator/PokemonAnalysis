@@ -240,9 +240,9 @@ PokemonType class >> start [
 	"weakAgainst/resistantTo"
 	RSLineBuilder directedBezier
 		color: Color transparent;
-		width: len;
+		width: len / 2;
 		markerEnd: (RSShapeFactory arrow
-				 size: len * 2;
+				 size: len;
 				 color: Color transparent);
 		attachPoint: (RSBorderAttachPoint new endOffset: len);
 		shapes: shapes;
