@@ -134,7 +134,7 @@ PokemonType class >> resistantColor [
 PokemonType class >> start [
 
 	<script>
-	| pokemonTypes canvas shapes hlVulnerableTo hlWeakAgainst hlResistantTo hlStrongAgainst pokemonDictionary sortedPokemonTypes legend sl vl wl rl from to win len |
+	| pokemonTypes canvas shapes hlVulnerableTo hlWeakAgainst hlResistantTo hlStrongAgainst pokemonDictionary sortedPokemonTypes legend sl vl wl rl win len legendBezierPoints toBox fromBox vShapes vCompositeShape wCompositeShape vCircle vFromBox vToBox wShapes |
 	pokemonTypes := self readTypesFromCSV:
 		                'pharo-local/iceberg/fuhrmanator/PokemonAnalysis/src/Relationships.csv'.
 
@@ -143,6 +143,21 @@ PokemonType class >> start [
 
 	pokemonDictionary := Dictionary new.
 	pokemonTypes do: [ :t | pokemonDictionary at: t asString put: t ].
+
+	legendBezierPoints := {
+		                      (0 @ 0).
+		                      (6 @ -1).
+		                      (10 @ 16).
+		                      (15 @ 15) }.
+
+	Transcript
+		show: 'legendBezierPoints first: ';
+		show: legendBezierPoints first;
+		cr.
+	Transcript
+		show: 'legendBezierPoints last: ';
+		show: legendBezierPoints last;
+		cr.
 
 	canvas := RSCanvas new.
 	shapes := RSCircle models: sortedPokemonTypes.
@@ -260,50 +275,58 @@ PokemonType class >> start [
 	legend container: canvas.
 	legend title: 'Legend (mouse over a type)'.
 
-	from := RSBox new size: 0.
-	to := RSBox new size: 0.
+	toBox := RSBox new size: 0.
+	fromBox := toBox copy.
 	sl := RSLine new
 		      width: 4;
 		      color: self strongColor;
-		      from: from;
-		      to: to.
-	to translateBy: 15 @ 8.
+		      from: fromBox;
+		      to: toBox. "legendBezierPoints first" "legendBezierPoints last"
+	toBox translateBy: legendBezierPoints last.
+	"sl inspect."
 	legend text: 'Strong against' withShape: sl.
 
 	rl := RSBezier new
 		      width: 2;
 		      color: self resistantColor;
-		      controlPoints: {
-				      (0 @ 0).
-				      (2 @ 5).
-				      (10 @ 9).
-				      (15 @ 8) }.
+		      controlPoints: legendBezierPoints.
 	legend text: 'Resistant to' withShape: rl.
 
 
-	from := RSBox new size: 0.
-	to := RSBox new size: 0.
-	vl := RSLine new
-		      width: 4;
-		      color: self vulnerableColor;
-		      from: from;
-		      to: to.
-	to translateBy: 15 @ 8.
-	legend
-		text: 'Vulnerable to' withCircleColor: self vulnerableColor;
-		text: '' withShape: vl.
+	vShapes := RSGroup new.
+	vShapes add: (RSCircle new
+			 radius: 8;
+			 color: self vulnerableColor).
+	vShapes add: (RSBezier new
+			 width: 4;
+			 color: self vulnerableColor;
+			 controlPoints: {legendBezierPoints first . legendBezierPoints last}).
+	RSGridLayout new
+		gapSize: 0;
+		lineItemsCount: 1;
+		on: vShapes.
+	vCompositeShape := RSComposite new
+		                   shapes: vShapes;
+		                   yourself.
 
+	legend text: 'Vulnerable to' withShape: vCompositeShape.
+
+	wShapes := RSGroup new.
 	wl := RSBezier new
 		      width: 2;
 		      color: self weakColor;
-		      controlPoints: {
-				      (0 @ 0).
-				      (2 @ 5).
-				      (10 @ 9).
-				      (15 @ 8) }.
+		      controlPoints: legendBezierPoints.
+	wShapes add: (RSCircle new radius: 8; color: self weakColor).
+	wShapes add: wl.
+	RSGridLayout new
+		gapSize: 0;
+		lineItemsCount: 1;
+		on: wShapes.
+	wCompositeShape := RSComposite new
+		                   shapes: wShapes;
+		                   yourself.
 	legend
-		text: 'Weak against' withCircleColor: self weakColor;
-		text: '' withShape: wl.
+		text: 'Weak against' withShape: wCompositeShape.
 
 	legend build.
 
